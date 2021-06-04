@@ -26,75 +26,38 @@
  * - Jangan ubah struktur atau nilai dari objek user yang dibawa oleh callback sebelumnya.
  * - Tetap gunakan NetworkError untuk membawa nilai error pada Promise
  */
-
+ 
  class NetworkError extends Error {
   constructor(message) {
     super(message);
     this.name = 'NetworkError';
   }
 }
-
+ 
 // TODO: 1
-
-isOffline = false;
-
-// const fetchingUserFromInternet = (callback, isOffline) => {
-//   setTimeout(() => {
-//     if (isOffline) {
-//       callback(new NetworkError('Gagal mendapatkan data dari internet'), null);
-//     }
-//     callback(null, { name: 'John', age: 18 });
-//   }, 500);
-// };
-
-const fetchingUserFromInternet = () => {
-  return new Promise((resolve, reject) => {
+ 
+// revisi 
+const fetchingUserFromInternet = (isOffline) => {
+  return new Promise((resolve,reject) => {
     setTimeout(() => {
-      if (isOffline){
-          resolve(new NetworkError('Gagal mendapatkan data dari internet'));
+      if (!isOffline) {
+          resolve({ name: 'John', age: 18 });
+      } else {
+          reject(new NetworkError('Gagal mendapatkan data dari internet'));
       }
-      else {
-        reject({ name: 'John', age: 18 });
-      }
-    }, 500);
-  });
+  }, 500);
+  })
 }
-
-const handleSuccess = resolvedValue => {
-  console.log(resolvedValue.message);
-}
-
-const handleFailure = rejectionReason => {
-  console.log(rejectionReason.name);
-}
-
+ 
 // TODO: 2
-// const gettingUserName = () => {
-//   fetchingUserFromInternet((error, user) => {
-//     if (error) {
-//       return error.message;
-//     }
-//     return user.name;
-//   }, false);
-// };
-
-// async function gettingUserName() {
-//   const error = await fetchingUserFromInternet();
-// if (error) {
-//     return error.message;
-//     }
-// return user.name;
-// false;
-// };
-
-const gettingUserName = () => {
-  fetchingUserFromInternet().then(handleSuccess, handleFailure);
-};
+ 
+async function gettingUserName() {
+  try {
+    const user = await fetchingUserFromInternet();
+    return user.name;
+  } catch (error) {
+      return error.message
+  }
+}
 
 console.log(gettingUserName());
-
-/**
-* Hiarukan kode di bawah ini
-*/
-
-// module.exports = { fetchingUserFromInternet, gettingUserName, NetworkError };
